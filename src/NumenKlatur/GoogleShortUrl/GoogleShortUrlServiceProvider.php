@@ -29,7 +29,7 @@ class GoogleShortUrlServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app['googleShortUrl'] = $this->app->share(function($app) {
-			return new GoogleShortUrlApi;
+			return new GoogleShortUrlApi(new \GuzzleHttp\Client());
 		});
 	}
 

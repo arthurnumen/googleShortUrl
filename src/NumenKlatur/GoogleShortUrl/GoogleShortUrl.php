@@ -1,7 +1,13 @@
 <?php namespace NumenKlatur\GoogleShortUrl;
 
 class GoogleShortUrlApi {
-	protected $apiURL = 'https://www.googleapis.com/urlshortener/v1/url?key=';
+	protected $apiURL;
+	protected $httpClient;
+
+	public function __construct($httpClient) {
+		$this->apiURL = 'https://www.googleapis.com/urlshortener/v1/url';
+		$this->httpClient = $httpClient;
+	}
 		
 	public function shorten($url) {
 		$response = $this->send($url);
@@ -13,21 +19,19 @@ class GoogleShortUrlApi {
 		return isset($response['longUrl']) ? $response['longUrl'] : false;
 	}
 	
-	public function send($url,$shorten = true) {
+	public function send($url, $shorten = true) {
 		$this->apiKey = \Config::get('google-short-url::google_api_key');
-		$ch = curl_init();
 		if($shorten) {
-			curl_setopt($ch,CURLOPT_URL,$this->apiURL . $this->apiKey);
-			curl_setopt($ch,CURLOPT_POST,1);
-			curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode(array("longUrl"=>$url)));
-			curl_setopt($ch,CURLOPT_HTTPHEADER,array("Content-Type: application/json"));
+			$response = $this->httpClient->post(
+				$this->apiURL.'?key='.$this->apiKey, array(
+					'headers' => array('Content-type' => 'application/json'),
+					'body' => json_encode(array("longUrl"=>$url))
+				)
+			);
 		}
 		else {
-			curl_setopt($ch,CURLOPT_URL,$this->apiURL.'&shortUrl='.$url);
+			$response = $this->httpClient->get($this->apiURL.'&shortUrl='.$url);
 		}
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-		$result = curl_exec($ch);
-		curl_close($ch);
-		return json_decode($result,true);
+		return json_decode($response->getBody());
 	}
 }
