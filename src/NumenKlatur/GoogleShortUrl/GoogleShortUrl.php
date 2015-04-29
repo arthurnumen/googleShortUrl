@@ -14,7 +14,7 @@ class GoogleShortUrlApi {
 	}
 	
 	public function send($url,$shorten = true) {
-		$this->apiKey = \Config::get('google-url::google_api_key');
+		$this->apiKey = \Config::get('google-short-url::google_api_key');
 		$ch = curl_init();
 		if($shorten) {
 			curl_setopt($ch,CURLOPT_URL,$this->apiURL . $this->apiKey);
