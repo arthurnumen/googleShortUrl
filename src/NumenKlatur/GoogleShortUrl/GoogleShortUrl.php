@@ -11,12 +11,12 @@ class GoogleShortUrlApi {
 		
 	public function shorten($url) {
 		$response = $this->send($url);
-		return isset($response['id']) ? $response['id'] : false;
+		return isset($response->id) ? $response->id : false;
 	}
 	
 	public function expand($url) {
 		$response = $this->send($url,false);
-		return isset($response['longUrl']) ? $response['longUrl'] : false;
+		return isset($response->longUrl) ? $response->longUrl : false;
 	}
 	
 	public function send($url, $shorten = true) {
@@ -30,7 +30,7 @@ class GoogleShortUrlApi {
 			);
 		}
 		else {
-			$response = $this->httpClient->get($this->apiURL.'&shortUrl='.$url);
+			$response = $this->httpClient->get($this->apiURL.'?key='.$this->apiKey.'&shortUrl='.$url);
 		}
 		return json_decode($response->getBody());
 	}
